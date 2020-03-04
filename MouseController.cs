@@ -24,44 +24,43 @@ namespace OOP1
         {
             control.MouseDown += MouseDown;
             control.MouseUp += MouseUp;
-            control.MouseMove += MouseMove;
             control.MouseWheel += MouseWheel;
-
+            timer = new Timer
+            {
+                Interval = 16
+            };
+            timer.Enabled = false;
+            timer.Tick += MouseMove;
             this.offset = offset;
             this.scale = scale;
         }
+        Timer timer;
         private void MouseDown(object sender, MouseEventArgs e)
         {
-            s = true;
-            lastMouse = e.Location;
+            lastMouse = Cursor.Position;
+            timer.Enabled = true;
         }
-        bool s;
         PointF lastMouse;
         PointF offset;
         float scale;
-        private void MouseMove(object sender, MouseEventArgs e)
+        private void MouseMove(object sender, EventArgs args)
         {
-            if (s)
-            {
-                float k = scale / (scale + 1 / scale) ;
-                offset.X += (e.X - lastMouse.X) * k;
-                offset.Y += (e.Y - lastMouse.Y) * k;
-                lastMouse = e.Location;
-                MatrixUpdated(this, new MatrixArgs() { Offset = offset, Scale = scale });
-
-
-            }
+            float k = scale / (scale + 1 / scale);
+            offset.X += (Cursor.Position.X - lastMouse.X) * k;
+            offset.Y += (Cursor.Position.Y - lastMouse.Y) * k;
+            lastMouse = Cursor.Position;
+            MatrixUpdated(this, new MatrixArgs() { Offset = offset, Scale = scale });
         }
         private void MouseWheel(object sender, MouseEventArgs e)
         {
             if ((scale > 1 || e.Delta > 0) && (scale < 20 || e.Delta < 0))
-                scale += (float)e.Delta / 1000.0f;
+                scale += e.Delta / 1000.0f;
             MatrixUpdated(this, new MatrixArgs() { Offset = offset, Scale = scale });
         }
 
         private void MouseUp(object sender, MouseEventArgs e)
         {
-            s = false;
+            timer.Enabled = false;
         }
     }
     class MatrixArgs

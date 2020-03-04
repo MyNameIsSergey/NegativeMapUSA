@@ -88,7 +88,6 @@ namespace OOP1
             for (int i = 0; i < threads.Length; i++)
             {
                 threads[i] = new System.Threading.Thread(() => stateCollection.CalculatePositiveLevel(dictionary, messageReader));
-                threads[i].Priority = System.Threading.ThreadPriority.Highest;
                 threads[i].Start();
             }
             //Task.Run(() => stateCollection.CalculatePositiveLevel(dictionary, messageReader));

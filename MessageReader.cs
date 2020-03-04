@@ -9,7 +9,7 @@ namespace OOP1
 {
     class MessageReader : IDisposable
     {
-        public bool EmptyBuff { get => reader.EndOfStream; }
+        public bool EmptyBuff { get => reader.BaseStream.Position == reader.BaseStream.Length; }
         public int BuffSize { get => buffSize; set { buffSize = value > 0 ? value : buffSize;  } }
         private int buffSize = 200;
 
@@ -21,7 +21,7 @@ namespace OOP1
         public MessageReader(string file)
         {
             OpenNewFile(file);
-            ReadNext(buffSize / 2);
+            FillBuff();
 
             thread = new System.Threading.Thread(ReadNext);
             thread.Priority = System.Threading.ThreadPriority.Normal;
@@ -32,26 +32,30 @@ namespace OOP1
             if (reader != null)
             {
                 reader.Close();
+                reader.Dispose();
             }
+
             reader = new System.IO.StreamReader(file);
-            //TryReadNext();
         }
         public Message GetNextMessage()
         {
-            Message message;
+            Message message = null;
             lock (messages)
             {
-                message = messages[0];
-                messages.RemoveAt(0);
+                if (messages.Count != 0)
+                {
+                    message = messages[0];
+                    messages.RemoveAt(0);
+                }
             }
             
             return message;
         }
 
 
-        private void ReadNext(int qt)
+        private void FillBuff()
         {
-            for (int i = 0; i < qt && !reader.EndOfStream; i++)
+            for (int i = 0; messages.Count < buffSize && !reader.EndOfStream; i++)
             {
                 Message message;
                 if ((message = parser.ParseMessage(reader.ReadLine())) != null)
@@ -64,10 +68,10 @@ namespace OOP1
             {
                 if (messages.Count > buffSize / 2)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(300);
                     continue;
                 }
-                ReadNext(buffSize);
+                FillBuff();
             }
         }
 

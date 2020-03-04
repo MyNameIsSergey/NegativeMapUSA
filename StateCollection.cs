@@ -33,8 +33,11 @@ namespace OOP1
         public void CalculatePositiveLevel(Dictionary dictionary, MessageReader messageReader)
         {
             Message message;
-            while ((message = messageReader.GetNextMessage()) != null)
+            while (!messageReader.EmptyBuff)
             {
+                if ((message = messageReader.GetNextMessage()) == null)
+                    continue;
+
                 FindState(message.Position)?.CorrectPositiveLevel(dictionary.CheckSentence(message.Text));
                 if (ProcessedMessages++ % Update == 0)
                 {
