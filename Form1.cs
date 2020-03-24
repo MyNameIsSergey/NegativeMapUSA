@@ -21,15 +21,7 @@ namespace OOP1
         public Form1()
         {
             InitializeComponent();
-            StateReader fileReader = new StateReader("states.json");
             dictionary = new Dictionary("sentiments.csv");
-            State state;
-            List<State> states = new List<State>(50);
-            while ((state = fileReader.GetNextState()) != null)
-                states.Add(state);
-            stateCollection = new StateCollection(states.ToArray()) { Update = 500 };
-            stateCollection.OnNewData += StateCollection_OnNewData;
-            stateCollection.OnEnd += StateCollection_OnEnd;
             stdArgs = new MatrixArgs() { Offset = new PointF(2000, 900), Scale = 10 };
             mouse = new MouseController(pictureBox, stdArgs.Offset, stdArgs.Scale);
             mouse.MatrixUpdated += Mouse_MatrixUpdated;
@@ -77,6 +69,15 @@ namespace OOP1
             IniFile file = new IniFile("info.ini");
             int qtThreads = int.Parse(file.ReadINI("Threads", "threads"));
             int buff = int.Parse(file.ReadINI("Threads", "buff"));
+            int frequency = int.Parse(file.ReadINI("View", "updateFrequency"));
+            State state;
+            List<State> states = new List<State>(50);
+            StateReader fileReader = new StateReader("states.json");
+            while ((state = fileReader.GetNextState()) != null)
+                states.Add(state);
+            stateCollection = new StateCollection(states.ToArray()) { Update = frequency };
+            stateCollection.OnNewData += StateCollection_OnNewData;
+            stateCollection.OnEnd += StateCollection_OnEnd;
             messageReader = new MessageReader(file.ReadINI("File", "name")) { BuffSize = buff };
             threads = new System.Threading.Thread[qtThreads];
         }

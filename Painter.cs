@@ -43,7 +43,6 @@ namespace OOP1
                 {
                     bitmap = new Bitmap(pictureBox.Width, pictureBox.Height);
                     g1 = Graphics.FromImage(bitmap);
-                    g2 = Graphics.FromImage(bitmap);
                     g1.Clear(Color.White);
                 }
             }

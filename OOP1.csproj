@@ -57,6 +57,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="IDictionaryPage.cs" />
     <Compile Include="IniFiles.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageReader.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="State.cs" />
     <Compile Include="StateCollection.cs" />
     <Compile Include="StateReader.cs" />
+    <Compile Include="WordPage.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

@@ -38,8 +38,11 @@ namespace OOP1
                 if ((message = messageReader.GetNextMessage()) == null)
                     continue;
 
-                FindState(message.Position)?.CorrectPositiveLevel(dictionary.CheckSentence(message.Text));
-                if (ProcessedMessages++ % Update == 0)
+                State s = FindState(message.Position);
+                if (s == null)
+                    continue;
+                s.CorrectPositiveLevel(dictionary.CheckSentence(message.Text));
+                if (++ProcessedMessages % Update == 0)
                 {
                     Task.Run(() => OnNewData(this, new StateEventArgs() { States = States, ProcessedMessage = ProcessedMessages }));
                 }

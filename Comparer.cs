@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace OOP1
 {
-    class Comparer : IComparer<DictionaryPage>
+    class Comparer : IComparer<IDictionaryPage>
     {
-        public int Compare(DictionaryPage x, DictionaryPage y)
+        public int Compare(IDictionaryPage x, IDictionaryPage y)
         {
-            return -x.QtWords + y.QtWords;
+            return x.QtWords + y.QtWords;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,20 @@ using System.Threading.Tasks;
 
 namespace OOP1
 {
-    struct DictionaryPage
+    class DictionaryPage : IDictionaryPage
     {
-        public int QtWords { get => Words.First().Key.Length; }
-        public Dictionary<string[], float> Words { get; set; }
+        public int QtWords { get; private set; }
+        private Dictionary<string, float> Words { get; set; }
+        public DictionaryPage(int qt)
+        {
+            QtWords = qt;
+            Words = new Dictionary<string, float>();
+        }
+        public void Add(string[] key, float value)
+        {
+            
+            Words.Add(string.Join(" ", key), value);
+        }
         public float CheckSentence(Sentence sentence)
         {
             float result = 0;
@@ -19,26 +30,13 @@ namespace OOP1
             }
             for (int i = 0; i + QtWords < sentence.Length; i++)
             {
-                foreach (var word in Words)
+                string s = sentence.Words[i];
+                for(int j = 1; j < QtWords; j++)
                 {
-                    bool correct = true;
-                    for (int j = 0; j < QtWords; j++)
-                    {
-                        if (sentence.Checked[i + j] || !(word.Key[j] == sentence[i + j]))
-                        {
-                            correct = false;
-                            break;
-                        }
-                    }
-                    if (correct)
-                    {
-                        for (int j = 0; j < QtWords; j++)
-                        {
-                            sentence.Checked[i + j] = true;
-                        }
-                        result += word.Value;
-                    }
+                    s += ' ' + sentence.Words[i + j];
                 }
+                if (Words.ContainsKey(s))
+                    result += Words[s];
             }
             return result;
         }

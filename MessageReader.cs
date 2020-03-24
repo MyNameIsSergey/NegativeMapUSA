@@ -9,7 +9,7 @@ namespace OOP1
 {
     class MessageReader : IDisposable
     {
-        public bool EmptyBuff { get => reader.BaseStream.Position == reader.BaseStream.Length; }
+        public bool EmptyBuff { get => reader.BaseStream.Position == reader.BaseStream.Length && messages.Count == 0; }
         public int BuffSize { get => buffSize; set { buffSize = value > 0 ? value : buffSize;  } }
         private int buffSize = 200;
 
@@ -68,7 +68,7 @@ namespace OOP1
             {
                 if (messages.Count > buffSize / 2)
                 {
-                    System.Threading.Thread.Sleep(300);
+                    //System.Threading.Thread.Sleep(300);
                     continue;
                 }
                 FillBuff();
@@ -87,58 +87,51 @@ namespace OOP1
         public Message ParseMessage(string s)
         {
             Message message = new Message();
-            List<string> array = s.ToLower().Split(' ', '\t', '[', ']', ',').ToList();
-            try
-            {
-                message.Position = new PointF(float.Parse(array[1].Replace('.', ',')), float.Parse(array[3].Replace('.', ',')));
-                //for (int i = 8; i < array.Length; i++)
-
-                string l = "";
-                for(int i = 8; i < array.Count - 8; i++)
-                {
-                    l += array[i] + ' ';
-                }
-                array = l.Split(',', ' ', '.', '%', '@', '}', '{', ')', '(').ToList();
-                array.RemoveAll((k) => k == string.Empty);
-                message.Text = new string[array.Count];
-                Array.Copy(array.ToArray(), 0, message.Text, 0, array.Count);
-                //message.Text += array[i] + ' ';
-            }
-            catch
-            {
+            string[] array = s.ToLower().Split(' ', '\t', '[', ']', ',');
+            float x, y;
+            if (array.Length < 8)
                 return null;
-            }
-            return message;
+            if (!float.TryParse(array[1].Replace('.', ','), out x))
+                return null;
+            if (!float.TryParse(array[3].Replace('.', ','), out y))
+                return null;
+            message.Position = new PointF(x, y);
 
+            List<string> temp = new List<string>();
+            for(int i = 8; i < array.Length; i++)
+            {
+                temp.AddRange(array[i].Split(',', ' ', '.', '%', '@', '}', '{', ')', '('));
+            }
+            temp.RemoveAll((k) => k == string.Empty);
+            if (temp.Count == 0)
+                return null;
+            message.Text = temp.ToArray();
+            return message;
         }
     }
 }
 
-
-//public Message GetNextMessage(IEnumerable<State> states)
+//public Message ParseMessage(string s)
 //{
 //    Message message = new Message();
-//    if (buff.Count == 0)
-//    {
-//        if (TryReadNext())
-//            return GetNextMessage(states);
+//    string[] array = s.ToLower().Split(' ', '\t', '[', ']', ',');
+//    float x, y;
+//    if (array.Length < 8)
 //        return null;
-//    }
-//    string[] array = buff.First().Split(' ', '\t', '[', ']', ',');
-//    try
-//    {
-//        message.Position = new PointF(float.Parse(array[1].Replace('.', ',')), float.Parse(array[3].Replace('.', ',')));
-//        //for (int i = 8; i < array.Length; i++)
-//        message.Text = new string[array.Length - 8];
-//        Array.Copy(array, 8, message.Text, 0, array.Length - 8);
-//        //message.Text += array[i] + ' ';
-//    }
-//    catch
-//    {
-//        buff.RemoveAt(0);
-//        return GetNextMessage(states);
-//    }
+//    if (float.TryParse(array[1], out x))
+//        return null;
+//    if (float.TryParse(array[3], out y))
+//        return null;
+//    message.Position = new PointF(x, y);
 
-//    buff.RemoveAt(0);
+//    List<string> temp = new List<string>();
+//    for (int i = 8; i < array.Length; i++)
+//    {
+//        temp.AddRange(array[i].Split(',', ' ', '.', '%', '@', '}', '{', ')', '('));
+//    }
+//    temp.RemoveAll((k) => k == string.Empty);
+//    if (temp.Count == 0)
+//        return null;
+//    message.Text = temp.ToArray();
 //    return message;
 //}

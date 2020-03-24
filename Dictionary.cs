@@ -8,7 +8,7 @@ namespace OOP1
 {
     class Dictionary
     {
-        private List<DictionaryPage> pages = new List<DictionaryPage>();
+        private List<IDictionaryPage> pages = new List<IDictionaryPage>();
 
         public Dictionary(string file)
         {
@@ -23,12 +23,16 @@ namespace OOP1
                 int index = pages.FindIndex((page) => page.QtWords == words.Length);
                 if (index >= 0)
                 {
-                    pages[index].Words.Add(words, float.Parse(buff[i + 1].Replace('.', ',')));
+                    pages[index].Add(words, float.Parse(buff[i + 1].Replace('.', ',')));
                 }
                 else
                 {
-                    pages.Add(new DictionaryPage() { Words = new Dictionary<string[], float>() });
-                    pages.Last().Words.Add(words, float.Parse(buff[i + 1].Replace('.', ',')));
+                    if (words.Length == 1)
+                        pages.Add(new WordPage());
+                    else
+                        pages.Add(new DictionaryPage(words.Length));
+
+                    pages.Last().Add(words, float.Parse(buff[i + 1].Replace('.', ',')));
                 }
             }
             pages.Sort(new Comparer());
